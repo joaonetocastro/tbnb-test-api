@@ -54,6 +54,15 @@ class ProductUpdateTest extends TestCase
         $response->assertStatus(400);
         $response->assertJsonStructure(['error']);
     }
+    public function testUpdateWithoutBarcode()
+    {
+        $product = factory(Product::class)->create();
+        $productData = $product->toArray();
+        unset($productData['barcode']);
+        $response = $this->put('/api/products/'.$product->id, $productData);
+        $response->assertStatus(400);
+        $response->assertJsonStructure(['error']);
+    }
     public function testUpdateWithExistingBarcode()
     {
         $product1 = factory(Product::class)->create();

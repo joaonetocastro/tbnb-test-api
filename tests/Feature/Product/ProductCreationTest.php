@@ -57,11 +57,17 @@ class ProductCreationTest extends TestCase
     public function testCreationLackingBarcode()
     {
         $productData = factory(Product::class)->make()->toArray();
-        unset($productData->barcode);
+        unset($productData['barcode']);
         $response = $this->post('/api/products', $productData);
-        $response->assertStatus(201);
-        $response->assertCreated();
-        $response->assertJsonFragment($productData);
+        // dd($response);
+        $response->assertStatus(500);
+    }
+    public function testCreationWithEmptyBarcode()
+    {
+        $productData = factory(Product::class)->make()->toArray();
+        $productData['barcode'] = '';
+        $response = $this->post('/api/products', $productData);
+        $response->assertStatus(500);
     }
     public function testCreationWithSameBarcode()
     {
@@ -69,16 +75,6 @@ class ProductCreationTest extends TestCase
         $product->save();
         $productData = $product->toArray();
         unset($productData['id']);
-        $response = $this->post('/api/products', $productData);
-        $response->assertStatus(400);
-        $response->assertJsonStructure(['error']);
-    }
-    public function testUpdateWithExistingBarcode()
-    {
-        $product1 = factory(Product::class)->create();
-        $product2 = factory(Product::class)->create();
-        $productData = $product2->toArray();
-        $productData['barcode'] = $product1->barcode;
         $response = $this->post('/api/products', $productData);
         $response->assertStatus(400);
         $response->assertJsonStructure(['error']);

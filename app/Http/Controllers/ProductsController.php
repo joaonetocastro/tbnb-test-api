@@ -60,6 +60,9 @@ class ProductsController extends Controller
         if(empty($productData['name'])){
             return response()->json(['error' => 'EMPTY_NAME'], 400);
         }
+        if(empty($productData['barcode'])){
+            return response()->json(['error' => 'EMPTY_BARCODE'], 400);
+        }
 
         if($productData['barcode'] && Product::where([
             ['barcode', '=',$productData['barcode']],
