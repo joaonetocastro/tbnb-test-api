@@ -36,6 +36,12 @@ class ProductsController extends Controller
         if($productData['barcode'] && Product::where('barcode', $productData['barcode'])->first()){
             return response()->json(['error' => 'BARCODE_EXISTS'], 400);
         }
+        if(strlen($productData['barcode']) !== 0 
+            && strlen($productData['barcode']) !== 12 
+            && strlen($productData['barcode']) !== 14)
+            {
+            return response()->json(['error' => 'INVALID_BARCODE'], 400);
+        }
         $product = Product::create($productData);
         return response()
         ->json($product, 201);
@@ -55,6 +61,19 @@ class ProductsController extends Controller
             return response()->json(['error' => 'EMPTY_NAME'], 400);
         }
 
+        if($productData['barcode'] && Product::where([
+            ['barcode', '=',$productData['barcode']],
+            ['id', '!=', $productData['id']] 
+            ])->first()
+        ){
+            return response()->json(['error' => 'BARCODE_EXISTS'], 400);
+        }
+        if(strlen($productData['barcode']) !== 0 
+            && strlen($productData['barcode']) !== 12 
+            && strlen($productData['barcode']) !== 14)
+            {
+            return response()->json(['error' => 'INVALID_BARCODE'], 400);
+        }
         $product->name = $productData['name'];
         $product->save();
         return response()

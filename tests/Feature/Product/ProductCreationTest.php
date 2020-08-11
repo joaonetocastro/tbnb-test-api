@@ -73,4 +73,14 @@ class ProductCreationTest extends TestCase
         $response->assertStatus(400);
         $response->assertJsonStructure(['error']);
     }
+    public function testUpdateWithExistingBarcode()
+    {
+        $product1 = factory(Product::class)->create();
+        $product2 = factory(Product::class)->create();
+        $productData = $product2->toArray();
+        $productData['barcode'] = $product1->barcode;
+        $response = $this->post('/api/products', $productData);
+        $response->assertStatus(400);
+        $response->assertJsonStructure(['error']);
+    }
 }

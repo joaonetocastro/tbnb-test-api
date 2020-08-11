@@ -17,18 +17,19 @@ class ProductUpdateTest extends TestCase
 
     public function testUpdate()
     {
-        $productData = factory(Product::class)->make()->toArray();
-        $product = Product::create($productData);
+        
+        $product = factory(Product::class)->create();
+        $productData = $product->toArray();
         $productData['name'] = 'random name';
-        $response = $this->putJson('/api/products/'.$product->id, $productData);
+        $response = $this->put('/api/products/'.$product->id, $productData);
         $response->assertStatus(200);
-        $response->assertJsonFragment($productData);
+        $response->assertJsonFragment(['name' => 'random name']);
     }
     public function testUpdateWithoutId()
     {
         $product = factory(Product::class)->create();
         $productData = $product->toArray();
-        $response = $this->putJson('/api/products/'.$product->id, $productData);
+        $response = $this->put('/api/products/'.$product->id, $productData);
         $response->assertStatus(200);
         unset($productData['id']);
         $response->assertJsonFragment($productData);
@@ -39,14 +40,33 @@ class ProductUpdateTest extends TestCase
         $product = factory(Product::class)->create();
         $productData = $product->toArray();
         $productData['quantity'] = $productData['quantity'] + 10;
-        $response = $this->putJson('/api/products/'.$product->id, $productData);
+        $response = $this->put('/api/products/'.$product->id, $productData);
         $response->assertStatus(200);
         unset($productData['quantity']);
         $response->assertJsonFragment($productData);
     }
+    public function testUpdateWithoutName()
+    {
+        $product = factory(Product::class)->create();
+        $productData = $product->toArray();
+        unset($productData['name']);
+        $response = $this->put('/api/products/'.$product->id, $productData);
+        $response->assertStatus(400);
+        $response->assertJsonStructure(['error']);
+    }
+    public function testUpdateWithExistingBarcode()
+    {
+        $product1 = factory(Product::class)->create();
+        $product2 = factory(Product::class)->create();
+        $productData = $product2->toArray();
+        $productData['barcode'] = $product1->barcode;
+        $response = $this->put('/api/products/'.$product2->id, $productData);
+        $response->assertStatus(400);
+        $response->assertJsonStructure(['error']);
+    }
     public function testUpdateWithNonexistingId()
     {
-        $response = $this->putJson('/api/products/RANDOM_AND_NON_EXISTING_ID');
+        $response = $this->put('/api/products/RANDOM_AND_NON_EXISTING_ID');
         $response->assertStatus(404);
     }
 }
