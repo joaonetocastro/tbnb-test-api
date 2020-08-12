@@ -18,6 +18,7 @@ class ProductCreationTest extends TestCase
     {
         $productData = factory(Product::class)->make()->toArray();
         $response = $this->post('/api/products', $productData);
+        unset($productData['quantity']);
         $response->assertStatus(201);
         $response->assertCreated();
         $response->assertJsonFragment($productData);
@@ -27,6 +28,7 @@ class ProductCreationTest extends TestCase
         $productData = factory(Product::class)->make()->toArray();
         $productData['id'] = 'randomId';
         $response = $this->post('/api/products', $productData);
+        unset($productData['quantity']);
         $response->assertStatus(400);
     }
     public function testCreationLackingName()
@@ -34,6 +36,7 @@ class ProductCreationTest extends TestCase
         $productData = factory(Product::class)->make()->toArray();
         unset($productData['name']);
         $response = $this->post('/api/products', $productData);
+        unset($productData['quantity']);
         $response->assertStatus(400);
         $response->assertJsonStructure(['error']);
     }
@@ -42,6 +45,7 @@ class ProductCreationTest extends TestCase
         $productData = factory(Product::class)->make()->toArray();
         $productData['name'] = '';
         $response = $this->post('/api/products', $productData);
+        unset($productData['quantity']);
         $response->assertStatus(400);
         $response->assertJsonStructure(['error']);
     }
@@ -50,6 +54,7 @@ class ProductCreationTest extends TestCase
         $productData = factory(Product::class)->make()->toArray();
         unset($productData['quantity']);
         $response = $this->post('/api/products', $productData);
+        unset($productData['quantity']);
         $response->assertStatus(201);
         $response->assertCreated();
         $response->assertJsonFragment($productData);
@@ -60,6 +65,7 @@ class ProductCreationTest extends TestCase
         unset($productData['barcode']);
         $response = $this->post('/api/products', $productData);
         // dd($response);
+        unset($productData['quantity']);
         $response->assertStatus(500);
     }
     public function testCreationWithEmptyBarcode()
@@ -67,6 +73,7 @@ class ProductCreationTest extends TestCase
         $productData = factory(Product::class)->make()->toArray();
         $productData['barcode'] = '';
         $response = $this->post('/api/products', $productData);
+        unset($productData['quantity']);
         $response->assertStatus(500);
     }
     public function testCreationWithSameBarcode()
@@ -76,6 +83,7 @@ class ProductCreationTest extends TestCase
         $productData = $product->toArray();
         unset($productData['id']);
         $response = $this->post('/api/products', $productData);
+        unset($productData['quantity']);
         $response->assertStatus(400);
         $response->assertJsonStructure(['error']);
     }

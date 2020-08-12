@@ -19,6 +19,7 @@ class CreateProductsTable extends Migration
             $table->integer('quantity');
             $table->string('barcode',14);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

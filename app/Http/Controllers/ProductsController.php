@@ -27,6 +27,7 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         $productData = $request->all();
+        unset($productData['quantity']);
         if(isset($productData['id'])){
             return response()->json(['error' => 'PRODUCT_HAS_ID'], 400);
         } 
@@ -57,6 +58,7 @@ class ProductsController extends Controller
     public function update(Request $request, Product $product)
     {
         $productData = $request->all();
+        unset($productData['quantity']);
         if(empty($productData['name'])){
             return response()->json(['error' => 'EMPTY_NAME'], 400);
         }
@@ -91,6 +93,7 @@ class ProductsController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+        return response(200);
     }
 }

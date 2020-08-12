@@ -5,6 +5,7 @@ namespace Tests\Feature\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use \App\Product;
 
 class ProductRemoveTest extends TestCase
 {
@@ -13,10 +14,15 @@ class ProductRemoveTest extends TestCase
      *
      * @return void
      */
-    public function testExample()
+    public function testDelete()
     {
-        // $response = $this->get('/');
-
-        // $response->assertStatus(200);
+        $product = factory(Product::class)->create();
+        $response = $this->delete('/api/products/'.$product->id);
+        $response->assertStatus(200);
+    }
+    public function testDeleteNonExistingId()
+    {
+        $response = $this->delete('/api/products/RANDOM_ID');
+        $response->assertStatus(404);
     }
 }
