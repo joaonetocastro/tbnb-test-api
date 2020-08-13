@@ -19,3 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::resource('products', 'ProductsController')->only([
     'index', 'store', 'update', 'destroy'
 ]);
+Route::post('movements', 'MovementsController@store');
+Route::get('movements/{productId}', 'MovementsController@getAll');

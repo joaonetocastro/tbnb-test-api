@@ -4,16 +4,16 @@ namespace App;
 
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Database\Eloquent\Model;
-class Product extends Model
+
+class Movement extends Model
 {
     use Uuid;
-    protected $fillable = ['name', 'quantity','barcode'];
-    protected $attributes = ['quantity' => 0, 'barcode' => ''];
+    protected $fillable = ['type', 'date'];
     protected $keyType = 'string';
     public $incrementing = false;
-    public function movements()
+    public function products()
     {
-        return $this->belongsToMany(\App\Movement::class)->withPivot([
+        return $this->belongsToMany(\App\Product::class)->withPivot([
             'quantity',
         ]);
     }
