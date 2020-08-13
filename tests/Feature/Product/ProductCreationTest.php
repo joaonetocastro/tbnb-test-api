@@ -64,9 +64,8 @@ class ProductCreationTest extends TestCase
         $productData = factory(Product::class)->make()->toArray();
         unset($productData['barcode']);
         $response = $this->post('/api/products', $productData);
-        // dd($response);
         unset($productData['quantity']);
-        $response->assertStatus(500);
+        $response->assertStatus(400);
     }
     public function testCreationWithEmptyBarcode()
     {
@@ -74,7 +73,7 @@ class ProductCreationTest extends TestCase
         $productData['barcode'] = '';
         $response = $this->post('/api/products', $productData);
         unset($productData['quantity']);
-        $response->assertStatus(500);
+        $response->assertStatus(400);
     }
     public function testCreationWithSameBarcode()
     {

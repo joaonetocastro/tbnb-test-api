@@ -25,4 +25,15 @@ class MovementBulkAddTest extends TestCase
         $response = $this->postJson('/api/movements', $movementData);
         $response->assertStatus(200);
     }
+    public function testDuplicateBarcodeAndName()
+    {
+        $products = array();
+        foreach(range(1,10) as $i){
+            $product = factory(Product::class)->create();
+            array_push($products, $product->toArray());
+        }
+        $movementData = ["type" => "in", 'products' => $products, 'newProducts' => [['name' => 'RANDOM NAME'],'barcode' => $products[2]['barcode']]];
+        $response = $this->postJson('/api/movements', $movementData);
+        $response->assertStatus(400);
+    }
 }

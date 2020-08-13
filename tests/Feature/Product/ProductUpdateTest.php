@@ -75,7 +75,8 @@ class ProductUpdateTest extends TestCase
     }
     public function testUpdateWithNonexistingId()
     {
-        $response = $this->put('/api/products/RANDOM_AND_NON_EXISTING_ID');
-        $response->assertStatus(404);
+        $productData = factory(Product::class)->make()->toArray();
+        $response = $this->put('/api/products/RANDOM_AND_NON_EXISTING_ID',$productData);
+        $response->assertStatus(400);
     }
 }

@@ -14,8 +14,8 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        return Product::all();
-        // return [];
+        $products = \App\Managers\Product\ListProductsManager::execute();
+        return response()->json($products,200);
     }
 
     /**
@@ -26,26 +26,15 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
+
         $productData = $request->all();
-        unset($productData['quantity']);
-        if(isset($productData['id'])){
-            return response()->json(['error' => 'PRODUCT_HAS_ID'], 400);
-        } 
-        if(empty($productData['name'])){
-            return response()->json(['error' => 'EMPTY_NAME'], 400);
+        try {
+            $product = \App\Managers\Product\CreateProductManager::execute($productData);
+            return response()
+                ->json($product, 201);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 400);
         }
-        if($productData['barcode'] && Product::where('barcode', $productData['barcode'])->first()){
-            return response()->json(['error' => 'BARCODE_EXISTS'], 400);
-        }
-        if(strlen($productData['barcode']) !== 0 
-            && strlen($productData['barcode']) !== 12 
-            && strlen($productData['barcode']) !== 14)
-            {
-            return response()->json(['error' => 'INVALID_BARCODE'], 400);
-        }
-        $product = Product::create($productData);
-        return response()
-        ->json($product, 201);
     }
 
     /**
@@ -55,45 +44,31 @@ class ProductsController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update($productId, Request $request)
     {
+
         $productData = $request->all();
-        unset($productData['quantity']);
-        if(empty($productData['name'])){
-            return response()->json(['error' => 'EMPTY_NAME'], 400);
+        try {
+            $product = \App\Managers\Product\UpdateProductManager::execute($productId, $productData);
+            return response()
+                ->json($product, 200);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 400);
         }
-        if(empty($productData['barcode'])){
-            return response()->json(['error' => 'EMPTY_BARCODE'], 400);
-        }
-
-        if($productData['barcode'] && Product::where([
-            ['barcode', '=',$productData['barcode']],
-            ['id', '!=', $productData['id']] 
-            ])->first()
-        ){
-            return response()->json(['error' => 'BARCODE_EXISTS'], 400);
-        }
-        if(strlen($productData['barcode']) !== 0 
-            && strlen($productData['barcode']) !== 12 
-            && strlen($productData['barcode']) !== 14)
-            {
-            return response()->json(['error' => 'INVALID_BARCODE'], 400);
-        }
-        $product->name = $productData['name'];
-        $product->save();
-        return response()
-        ->json($product, 200);
     }
-
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy($productId)
     {
-        $product->delete();
-        return response(200);
+        try {
+            \App\Managers\Product\DeleteProductManager::execute($productId);
+            return response(200);
+        } catch (\Exception $err) {
+            return response()->json(['error' => $err->getMessage()], 404);
+        }
     }
 }

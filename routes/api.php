@@ -20,4 +20,4 @@ Route::resource('products', 'ProductsController')->only([
     'index', 'store', 'update', 'destroy'
 ]);
 Route::post('movements', 'MovementsController@store');
-Route::get('movements/{productId}', 'MovementsController@getAll');
+Route::get('movements/{productId}', 'MovementsController@getProductMovements');
